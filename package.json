@@ -1,0 +1,29 @@
+{
+  "name": "node-scripting",
+  "version": "0.1.0",
+  "description": "Functions that simplify node utility scripts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/overengineered/node-scripting.git"
+  },
+  "keywords": [
+    "node",
+    "script",
+    "shell"
+  ],
+  "author": "Juozas Kontvainis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/overengineered/node-scripting/issues"
+  },
+  "homepage": "https://github.com/overengineered/node-scripting#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "tar-stream": "^2.1.4",
+    "zlib": "^1.0.5"
+  }
+}
