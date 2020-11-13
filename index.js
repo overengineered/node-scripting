@@ -11,7 +11,14 @@ async function main(origin, script) {
   if (require.main === origin) {
     context.wd = process.cwd();
     context.home = process.env.HOME;
-    return await script();
+    try {
+      return await script();
+    } catch (e) {
+      if (e.silenced !== true) {
+        process.stderr.write(util.inspect(e) + "\n");
+      }
+      process.exit(1);
+    }
   }
 }
 
@@ -50,7 +57,13 @@ async function each(stringOrArray, fn) {
 
 async function readOutput(execution) {
   const { stdout, stderr } = await execution;
-  return stderr ? stderr + "\n\n" + stdout.trim() : stdout.trim();
+  const output = sharp(stdout);
+  const errors = sharp(stderr);
+  if (output && errors) {
+    throw Object.assign(new Error("Command failed"), { output });
+  } else {
+    return output || errors;
+  }
 }
 
 function collectOutput(commands) {
@@ -60,12 +73,16 @@ function collectOutput(commands) {
 }
 
 function printOutput(commands, { printCommand = true } = {}) {
-  each(commands, (raw) => {
+  return each(commands, (raw) => {
     const command = cmd(raw);
     if (printCommand) {
-      printPretty([command]);
+      console.log(command);
     }
-    execSync(command, { stdio: "inherit" });
+    try {
+      execSync(command, { stdio: "inherit" });
+    } catch (e) {
+      throw Object.assign(e, { silenced: true });
+    }
   });
 }
 
@@ -82,18 +99,18 @@ function contextual(path) {
 }
 
 function timed(target, opt) {
-  const label =
-    typeof target === "string"
-      ? target
-      : target === main
-      ? contextual(process.argv[1])
-      : opt.name;
   const fn = opt || target;
   return async (...args) => {
     const start = process.hrtime();
     const result = await fn(...args);
     const end = process.hrtime(start);
-    print(`${label} execution time ${formatDuration(end)}`);
+    const label =
+      typeof target === "string"
+        ? target
+        : target === main
+        ? contextual(process.argv[1])
+        : opt.name;
+    console.log(`${label} execution time ${formatDuration(end)}`);
     return result;
   };
 }
@@ -106,13 +123,38 @@ function coerce(value, optional = value) {
   return optional;
 }
 
+function sharp(text) {
+  return text[text.length - 1] === "\n"
+    ? text.substring(0, text.length - 1)
+    : text;
+}
+
+const delay = (ms, value) =>
+  new Promise((resolve) => setTimeout(resolve, ms, value));
+
+function timeout(ms, promise) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(reject, ms)),
+  ]);
+}
+
+function failWith(message) {
+  if (message) {
+    throw message instanceof Error ? message : new Error(message);
+  }
+}
+
 module.exports = {
   main: Object.assign(main, { timed: timed(main) }),
   print: Object.assign((...args) => printPretty(args), {
     bare: (...args) => printBare(args),
     one: (v) => printPretty([v]),
   }),
-  exec: Object.assign(collectOutput, { io: printOutput }),
+  exec: Object.assign(collectOutput, {
+    io: printOutput,
+    log: (cmd) => collectOutput(cmd, { printCommand: true }),
+  }),
   fetch,
   formatDuration,
   contextual,
@@ -130,5 +172,8 @@ module.exports = {
     int: (key) => parseInt(process.env[key]),
   },
   timed,
+  delay,
+  timeout,
+  failWith,
   xp,
 };
