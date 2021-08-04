@@ -22,6 +22,14 @@ async function main(origin, script) {
   }
 }
 
+async function loadJson(file) {
+  return JSON.parse(await fs.readFile(file), {encoding: 'utf-8'});
+}
+
+async function saveJson(file, data, indentation = 2) {
+  return fs.writeFile(file, JSON.stringify(data, undefined, indentation));
+}
+
 function prepare(items, depth) {
   return items.map((data) => {
     const text = util.inspect(data, false, depth);
@@ -169,5 +177,7 @@ module.exports = {
   delay,
   timeout,
   failWith,
+  loadJson,
+  saveJson,
   xp,
 };
