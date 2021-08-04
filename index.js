@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const fetch = require("node-fetch");
 const util = require("util");
 const xp = require("./xp");
@@ -158,13 +158,7 @@ module.exports = {
   fetch,
   formatDuration,
   contextual,
-  fs: {
-    ...fs.promises,
-    exists: fs.existsSync,
-    createReadStream: fs.createReadStream,
-    createWriteStream: fs.createWriteStream,
-    $: fs,
-  },
+  fs,
   env: {
     text: (key, defaultValue = "") =>
       String(coerce(defaultValue, process.env[key])),

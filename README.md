@@ -46,8 +46,7 @@ Reexport from `'node-fetch'`.
 
 ## fs
 
-Exports `promises` from `'fs'`, plus `exists`, `createReadStream`, `createWriteStream` and also `$` for everyting
-else in `'fs'`.
+Reexport from `'fs-extra'`.
 
 ## env.text
 

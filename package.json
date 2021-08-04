@@ -1,6 +1,6 @@
 {
   "name": "node-scripting",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Functions that simplify node utility scripts",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/overengineered/node-scripting#readme",
   "dependencies": {
+    "fs-extra": "^10.0.0",
     "node-fetch": "^2.6.1",
     "tar-stream": "^2.1.4",
     "zlib": "^1.0.5"
