@@ -7,24 +7,23 @@ const execAsync = util.promisify(exec);
 
 const context = { wd: "*", home: "*" };
 
-async function main(origin, script) {
+function main(origin, script) {
   if (require.main === origin) {
     context.wd = process.cwd();
     context.home = process.env.HOME;
-    try {
-      return await script();
-    } catch (e) {
+    const run = async () => await script();
+    run().catch((e) => {
       if (e.silenced !== true) {
         process.stderr.write(util.inspect(e) + "\n");
       }
       process.exit(1);
-    }
+    });
   }
   return script;
 }
 
 async function loadJson(file) {
-  return JSON.parse(await fs.readFile(file), {encoding: 'utf-8'});
+  return JSON.parse(await fs.readFile(file), { encoding: "utf-8" });
 }
 
 async function saveJson(file, data, indentation = 2) {
