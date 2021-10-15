@@ -20,6 +20,7 @@ async function main(origin, script) {
       process.exit(1);
     }
   }
+  return script;
 }
 
 async function loadJson(file) {
