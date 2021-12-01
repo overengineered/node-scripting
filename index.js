@@ -22,7 +22,10 @@ function main(origin, script) {
   return script;
 }
 
-async function loadJson(file) {
+async function loadJson(file, fallback) {
+  if (args.length > 1 && !fs.existsSync(file)) {
+    return fallback;
+  }
   return JSON.parse(await fs.readFile(file), { encoding: "utf-8" });
 }
 
@@ -154,7 +157,9 @@ function failWith(message) {
 }
 
 module.exports = {
-  main: Object.assign(main, { timed: timed(main) }),
+  main: Object.assign(main, {
+    timed: (origin, script) => main(origin, timed(script)),
+  }),
   print: Object.assign((...args) => printPretty(args), {
     bare: (...args) => printBare(args),
     one: (v) => printPretty([v]),
