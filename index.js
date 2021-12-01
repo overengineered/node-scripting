@@ -158,7 +158,7 @@ function failWith(message) {
 
 module.exports = {
   main: Object.assign(main, {
-    timed: (origin, script) => main(origin, timed(script)),
+    timed: (origin, script) => main(origin, timed(script, main)),
   }),
   print: Object.assign((...args) => printPretty(args), {
     bare: (...args) => printBare(args),
