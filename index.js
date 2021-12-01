@@ -23,7 +23,7 @@ function main(origin, script) {
 }
 
 async function loadJson(file, fallback) {
-  if (args.length > 1 && !fs.existsSync(file)) {
+  if (arguments.length > 1 && !fs.existsSync(file)) {
     return fallback;
   }
   return JSON.parse(await fs.readFile(file), { encoding: "utf-8" });
