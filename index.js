@@ -89,11 +89,20 @@ function printOutput(commands, { printCommand = true } = {}) {
     if (printCommand) {
       console.log(command);
     }
-    try {
-      execSync(command, { stdio: "inherit" });
-    } catch (e) {
-      throw Object.assign(e, { silenced: true });
-    }
+    return new Promise((resolve, reject) => {
+      exec(command, { encoding: "utf-8" }, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          console.log(stdout);
+          if (stderr) {
+            reject(new Error("\n" + stderr));
+          } else {
+            resolve(true);
+          }
+        }
+      });
+    });
   });
 }
 
