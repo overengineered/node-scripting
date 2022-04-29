@@ -26,7 +26,7 @@ async function loadJson(file, fallback) {
   if (arguments.length > 1 && !fs.existsSync(file)) {
     return fallback;
   }
-  return JSON.parse(await fs.readFile(file), { encoding: "utf-8" });
+  return JSON.parse(await fs.readFile(file, { encoding: "utf-8" }));
 }
 
 async function saveJson(file, data, indentation = 2) {
