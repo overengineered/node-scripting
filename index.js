@@ -2,7 +2,7 @@ const fs = require("fs-extra");
 const fetch = require("node-fetch");
 const util = require("util");
 const xp = require("./xp");
-const { exec, execSync } = require("child_process");
+const { exec } = require("child_process");
 const execAsync = util.promisify(exec);
 
 const context = { wd: "*", home: "*" };
@@ -77,10 +77,14 @@ async function readOutput(execution) {
   }
 }
 
-function collectOutput(commands) {
-  return each(commands, async (command) =>
-    readOutput(execAsync(cmd(command), { encoding: "utf-8" }))
-  );
+function collectOutput(commands, { printCommand = false, ...rest }) {
+  return each(commands, async (raw) => {
+    const command = cmd(raw);
+    if (printCommand) {
+      console.log(command);
+    }
+    return readOutput(execAsync(cmd(command), { encoding: "utf-8", ...rest }));
+  });
 }
 
 function printOutput(commands, { printCommand = true } = {}) {
@@ -175,7 +179,8 @@ module.exports = {
   }),
   exec: Object.assign(collectOutput, {
     io: printOutput,
-    log: (cmd) => collectOutput(cmd, { printCommand: true }),
+    log: (cmd, options) =>
+      collectOutput(cmd, { ...options, printCommand: true }),
   }),
   fetch,
   formatDuration,
