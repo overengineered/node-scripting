@@ -77,7 +77,7 @@ async function readOutput(execution) {
   }
 }
 
-function collectOutput(commands, { printCommand = false, ...rest }) {
+function collectOutput(commands, { printCommand = false, ...rest } = {}) {
   return each(commands, async (raw) => {
     const command = cmd(raw);
     if (printCommand) {
@@ -87,14 +87,14 @@ function collectOutput(commands, { printCommand = false, ...rest }) {
   });
 }
 
-function printOutput(commands, { printCommand = true } = {}) {
+function printOutput(commands, { printCommand = true, ...rest } = {}) {
   return each(commands, (raw) => {
     const command = cmd(raw);
     if (printCommand) {
       console.log(command);
     }
     return new Promise((resolve, reject) => {
-      exec(command, { encoding: "utf-8" }, (error, stdout, stderr) => {
+      exec(command, { encoding: "utf-8", ...rest }, (error, stdout, stderr) => {
         if (error) {
           reject(error);
         } else {
