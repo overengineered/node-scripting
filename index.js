@@ -47,7 +47,9 @@ function printPretty(items) {
 }
 
 function printBare(items) {
-  items.forEach((e) => process.stdout.write(util.inspect(e)));
+  items.forEach((e) =>
+    process.stdout.write(typeof e === "string" ? e : util.inspect(e))
+  );
   return items[0];
 }
 
